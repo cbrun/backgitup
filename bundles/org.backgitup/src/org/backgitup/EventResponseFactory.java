@@ -16,7 +16,7 @@ class EventResponseFactory {
 		
 	}
 	
-	public EventResponse create(WatchEvent.Kind<Path> eventKind) {
+	public EventResponse create(WatchEvent.Kind<?> eventKind) {
 		EventResponse ret = null;
 		if (eventKind == ENTRY_CREATE) {
 			ret = new CreateEventResponse(fTarget);

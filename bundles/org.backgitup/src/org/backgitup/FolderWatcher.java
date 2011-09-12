@@ -90,7 +90,7 @@ public class FolderWatcher implements Runnable {
 					}
 				}
 					
-				EventResponse response = responseFactory.create((Kind<Path>) kind);
+				EventResponse response = responseFactory.create(kind);
 				if (response != null) {
 					fThreadPool.execute(response);
 				} else {
