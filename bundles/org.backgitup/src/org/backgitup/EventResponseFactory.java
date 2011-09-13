@@ -9,21 +9,14 @@ import java.nio.file.WatchEvent;
 
 class EventResponseFactory {
 
-	private final Path fTarget;
-
-	public EventResponseFactory(Path target) {
-		this.fTarget = target;
-		
-	}
-	
-	public EventResponse create(WatchEvent.Kind<?> eventKind) {
+	public EventResponse create(WatchEvent.Kind<?> eventKind, Path target) {
 		EventResponse ret = null;
 		if (eventKind == ENTRY_CREATE) {
-			ret = new CreateEventResponse(fTarget);
+			ret = new CreateEventResponse(target);
 		} else if (eventKind == ENTRY_DELETE) {
-			ret = new DeleteEventResponse(fTarget);
+			ret = new DeleteEventResponse(target);
 		} else if (eventKind == ENTRY_MODIFY) {
-			ret = new ModifyEventResponse(fTarget);
+			ret = new ModifyEventResponse(target);
 		}
 		return ret;
 	}

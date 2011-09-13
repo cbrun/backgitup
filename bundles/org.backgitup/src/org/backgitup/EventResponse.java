@@ -4,7 +4,7 @@ import java.nio.file.Path;
 
 abstract class EventResponse implements Runnable {
 
-	private Path fTarget;
+	private final Path fTarget;
 
 	EventResponse(Path target) {
 		fTarget = target;

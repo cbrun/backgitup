@@ -26,6 +26,7 @@ public class FolderWatcher implements Runnable {
 	private final boolean fRecursive;
 	private final WatchKey fRootKey;
 	private final ExecutorService fThreadPool;
+	private final EventResponseFactory fResponseFactory;
 
 	@SuppressWarnings("unchecked")
 	static <T> WatchEvent<T> cast(WatchEvent<?> event) {
@@ -35,11 +36,12 @@ public class FolderWatcher implements Runnable {
 	/**
 	 * Creates a WatchService and registers the given directory
 	 */
-	FolderWatcher(Path dir, boolean recursive) throws IOException {
+	FolderWatcher(Path dir, EventResponseFactory responseFactory, boolean recursive) throws IOException {
 		fThreadPool = Executors.newSingleThreadExecutor();
-
-		this.fWatcher = FileSystems.getDefault().newWatchService();
-		this.fRecursive = recursive;
+		fWatcher = FileSystems.getDefault().newWatchService();
+		
+		fRecursive = recursive;
+		fResponseFactory = responseFactory;
 
 		if (recursive) {
 			fRootKey = WatcherServiceUtil.registerAll(fWatcher, dir);
@@ -75,8 +77,6 @@ public class FolderWatcher implements Runnable {
 
 				final Path target = watchable.resolve(eventContext);
 
-				EventResponseFactory responseFactory = new EventResponseFactory(target);
-				
 				if (kind == OVERFLOW) {
 					LOGGER.log(Level.WARNING, "Overfow event");
 					continue;
@@ -90,7 +90,7 @@ public class FolderWatcher implements Runnable {
 					}
 				}
 					
-				EventResponse response = responseFactory.create(kind);
+				EventResponse response = fResponseFactory.create(kind, target);
 				if (response != null) {
 					fThreadPool.execute(response);
 				} else {

@@ -40,8 +40,9 @@ final class WatcherServiceUtil {
 	
 	static final class FileTreeRegistrar extends SimpleFileVisitor<Path> {
 		private final Path fStart;
-		private WatchKey fStartKey;
 		private final WatchService fWatcher;
+		
+		private WatchKey fStartKey;
 
 		FileTreeRegistrar(WatchService watcher, Path start) {
 			fWatcher = watcher;
@@ -53,13 +54,17 @@ final class WatcherServiceUtil {
 		}
 
 		@Override
-		public FileVisitResult preVisitDirectory(Path dir,
-				BasicFileAttributes attrs) throws IOException {
-			WatchKey registeredKey = register(fWatcher, dir);
-			if (dir.compareTo(fStart) == 0) {
-				fStartKey = registeredKey;
+		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+			final Path name = dir.getName(dir.getNameCount()-1);
+			if (!name.toString().startsWith(".")) {
+				WatchKey registeredKey = register(fWatcher, dir);
+				if (dir.compareTo(fStart) == 0) {
+					fStartKey = registeredKey;
+				}
+				
+				return FileVisitResult.CONTINUE;
 			}
-			return FileVisitResult.CONTINUE;
+			return FileVisitResult.SKIP_SUBTREE;
 		}
 	}
 }
